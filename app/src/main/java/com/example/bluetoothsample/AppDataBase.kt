@@ -22,10 +22,12 @@ interface ShortcutDao {
 @Dao
 interface DeckDao {
     @Query("SELECT * FROM deck WHERE deckId IS (:id)") fun getById(id: Long): LiveData<Deck>
+    @Query("SELECT * FROM deck") fun getAll(): LiveData<List<Deck>>
     @Insert(onConflict = OnConflictStrategy.REPLACE) fun insert(deck: Deck): Long
     @Update fun update(deck: Deck)
     @Delete fun delete(deck: Deck)
     @Query("DELETE FROM deck WHERE deckId IS (:id)") fun deleteById(id: Long)
+    @Query("DELETE FROM deck") fun deleteAllDeck()
 }
 
 @Dao

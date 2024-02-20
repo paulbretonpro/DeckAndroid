@@ -10,17 +10,26 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
+import com.example.bluetoothsample.viewmodel.DeckViewModel
+import com.example.bluetoothsample.viewmodel.DeckViewModelFactory
 
 class MainActivity : ComponentActivity() {
     companion object {
         const val TAG = "MainActivity"
     }
-
+    private lateinit var database: AppDataBase // Init database
     private lateinit var bluetoothController: BluetoothController
+
+    // Init DeckViewModel
+    private lateinit var deckViewModel: DeckViewModel
 
     private fun ensureBluetoothPermission(activity: ComponentActivity) {
         val requestPermissionLauncher = activity.registerForActivityResult(ActivityResultContracts.RequestPermission()){
@@ -46,13 +55,24 @@ class MainActivity : ComponentActivity() {
 
         bluetoothController = BluetoothController()
 
+        // Initialisation de la base de données Room
+        database = Room.databaseBuilder(
+            applicationContext,
+            AppDataBase::class.java,
+            "my_database"
+        ).build()
+
+        // Initialisation DeckViewModel
+        val deckDao = database.deckDao()
+        deckViewModel = ViewModelProvider(this, DeckViewModelFactory(deckDao))[DeckViewModel::class.java]
+
         setContent {
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        BluetoothUiConnection(bluetoothController)
-                        BluetoothDesk(bluetoothController)
-                    }
+            Surface(modifier = Modifier.fillMaxSize().padding(16.dp), color = MaterialTheme.colorScheme.background) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    BluetoothUiConnection(bluetoothController)
+                    BluetoothDesk(bluetoothController, deckViewModel)
                 }
+            }
         }
     }
 

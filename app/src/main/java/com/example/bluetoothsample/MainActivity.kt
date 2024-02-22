@@ -20,6 +20,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.bluetoothsample.viewmodel.DeckViewModel
 import com.example.bluetoothsample.viewmodel.DeckViewModelFactory
+import com.example.bluetoothsample.viewmodel.ShortcutViewModel
+import com.example.bluetoothsample.viewmodel.ShortcutViewModelFactory
 
 class MainActivity : ComponentActivity() {
     companion object {
@@ -30,6 +32,8 @@ class MainActivity : ComponentActivity() {
 
     // Init DeckViewModel
     private lateinit var deckViewModel: DeckViewModel
+    // Init ShortcutViewModel
+    private lateinit var shortcutViewModel: ShortcutViewModel
 
     private fun ensureBluetoothPermission(activity: ComponentActivity) {
         val requestPermissionLauncher = activity.registerForActivityResult(ActivityResultContracts.RequestPermission()){
@@ -65,12 +69,16 @@ class MainActivity : ComponentActivity() {
         // Initialisation DeckViewModel
         val deckDao = database.deckDao()
         deckViewModel = ViewModelProvider(this, DeckViewModelFactory(deckDao))[DeckViewModel::class.java]
+        // Initialisation DeckViewModel
+        val shortcutDao = database.shortcutDao()
+        val shortcutbydeckDao = database.shortcutbydeckDao()
+        shortcutViewModel = ViewModelProvider(this, ShortcutViewModelFactory(shortcutDao, shortcutbydeckDao))[ShortcutViewModel::class.java]
 
         setContent {
             Surface(modifier = Modifier.fillMaxSize().padding(16.dp), color = MaterialTheme.colorScheme.background) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     BluetoothUiConnection(bluetoothController)
-                    BluetoothDesk(bluetoothController, deckViewModel)
+                    BluetoothDesk(bluetoothController, deckViewModel, shortcutViewModel)
                 }
             }
         }

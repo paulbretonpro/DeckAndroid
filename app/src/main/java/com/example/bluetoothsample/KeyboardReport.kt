@@ -125,7 +125,7 @@ value class KeyboardReport(
 
         //azerty
         val KeyEventMap = mapOf(
-                KeyEvent.KEYCODE_Q to 4,
+            KeyEvent.KEYCODE_Q to 4,
             KeyEvent.KEYCODE_B to 5,
             KeyEvent.KEYCODE_C to 6,
             KeyEvent.KEYCODE_D to 7,
